@@ -1,4 +1,5 @@
 import sys
+import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
@@ -40,6 +41,23 @@ class TestVehiculos(unittest.TestCase):
 
     def test_consultar_vehiculos_sin_registros_devuelve_lista_vacia(self):
         self.assertEqual([], consultar_vehiculos())
+
+    def test_sqlite_rechaza_vehiculo_con_cliente_inexistente(self):
+        conexion = connection.obtener_conexion()
+
+        try:
+            with self.assertRaises(sqlite3.IntegrityError):
+                conexion.execute(
+                    """
+                    INSERT INTO vehiculos (
+                        id_cliente, marca, modelo, anio, placas, color
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    """,
+                    (999, "Nissan", "Versa", 2022, "XYZ999", "Azul"),
+                )
+        finally:
+            conexion.close()
 
     def test_registrar_vehiculo_con_datos_validos(self):
         exito, mensaje = registrar_vehiculo(1, "Nissan", "Versa", 2020, "ABC123", "Rojo")
