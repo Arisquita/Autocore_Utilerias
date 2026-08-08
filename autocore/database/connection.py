@@ -8,7 +8,9 @@ DB_PATH = BASE_DIR / "autocore.db"
 
 def obtener_conexion():
     """Abre una conexion con la base de datos SQLite de AutoCore."""
-    return sqlite3.connect(DB_PATH)
+    conexion = sqlite3.connect(DB_PATH)
+    conexion.execute("PRAGMA foreign_keys = ON")
+    return conexion
 
 
 def crear_tabla_clientes():

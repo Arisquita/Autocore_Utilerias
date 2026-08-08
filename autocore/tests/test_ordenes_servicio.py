@@ -1,4 +1,5 @@
 import sys
+import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
@@ -47,6 +48,23 @@ class TestOrdenesServicio(unittest.TestCase):
 
     def test_consultar_ordenes_sin_registros_devuelve_lista_vacia(self):
         self.assertEqual([], consultar_ordenes_servicio())
+
+    def test_sqlite_rechaza_orden_con_vehiculo_inexistente(self):
+        conexion = connection.obtener_conexion()
+
+        try:
+            with self.assertRaises(sqlite3.IntegrityError):
+                conexion.execute(
+                    """
+                    INSERT INTO ordenes_servicio (
+                        id_vehiculo, descripcion, fecha, estado, observaciones
+                    )
+                    VALUES (?, ?, ?, ?, ?)
+                    """,
+                    (999, "Revision", "2026-08-08", "pendiente", ""),
+                )
+        finally:
+            conexion.close()
 
     def test_registrar_orden_con_datos_validos(self):
         exito, mensaje = registrar_orden_servicio(

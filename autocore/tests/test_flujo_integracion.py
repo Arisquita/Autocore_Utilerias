@@ -12,6 +12,7 @@ from database.connection import crear_tabla_clientes
 from modules.clientes import (
     buscar_cliente_por_id,
     consultar_clientes,
+    editar_cliente,
     registrar_cliente,
 )
 from modules.ordenes_servicio import (
@@ -30,11 +31,7 @@ from modules.vehiculos import (
 
 
 class TestFlujoIntegracion(unittest.TestCase):
-    """Integra RF-01, RF-02 y RF-04 a RF-09 en un solo flujo.
-
-    RF-03 no se ejecuta porque la edicion de clientes no forma parte del flujo
-    principal aprobado para esta prueba de integracion.
-    """
+    """Integra RF-01 a RF-09 en un solo flujo."""
 
     def setUp(self):
         self.db_path_original = connection.DB_PATH
@@ -64,6 +61,21 @@ class TestFlujoIntegracion(unittest.TestCase):
         self.assertEqual(1, len(clientes))
         id_cliente = clientes[0][0]
         self.assertIsNotNone(buscar_cliente_por_id(id_cliente))
+
+        # RF-03: editar el mismo cliente sin cambiar su identidad.
+        cliente_editado, _ = editar_cliente(
+            id_cliente,
+            "Laura Martinez Garcia",
+            "5557654321",
+            "laura.martinez@email.com",
+            "Avenida Central 200",
+        )
+        self.assertTrue(cliente_editado)
+
+        cliente_actualizado = buscar_cliente_por_id(id_cliente)
+        self.assertEqual(id_cliente, cliente_actualizado[0])
+        self.assertEqual("Laura Martinez Garcia", cliente_actualizado[1])
+        self.assertEqual("5557654321", cliente_actualizado[2])
 
         # RF-04 y RF-05: registrar el vehiculo asociado al cliente.
         vehiculo_creado, _ = registrar_vehiculo(
