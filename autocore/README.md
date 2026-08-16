@@ -7,6 +7,7 @@ materia Desarrollo de Utilerías y Manejadores.
 
 - Python
 - SQLite
+- Tkinter y `ttk`
 - Visual Studio Code
 - `unittest`
 
@@ -28,6 +29,25 @@ puede tener varios vehículos.
 El módulo `modules/ordenes_servicio.py` permite crear y consultar órdenes,
 consultarlas por vehículo y actualizar su estado y sus observaciones. Cada orden
 debe pertenecer a un vehículo registrado.
+
+## Interfaz gráfica
+
+AutoCore 1.0 cuenta con una interfaz gráfica desarrollada con Tkinter y `ttk`.
+El archivo `gui.py` funciona exclusivamente como capa de presentación sobre los
+módulos existentes: no contiene SQL ni duplica la lógica de negocio.
+
+La ventana principal organiza las operaciones en tres pestañas:
+
+- **Clientes:** registrar, consultar y editar clientes (RF-01, RF-02 y RF-03).
+- **Vehículos:** registrar vehículos, asociarlos con clientes existentes y
+  consultarlos (RF-04 y RF-05).
+- **Órdenes de servicio:** crear y consultar órdenes, actualizar su estado y
+  actualizar sus observaciones (RF-06, RF-07, RF-08 y RF-09).
+
+Tanto `gui.py` como la interfaz de consola de `main.py` reutilizan las funciones
+de `modules/clientes.py`, `modules/vehiculos.py` y
+`modules/ordenes_servicio.py`. Ambas interfaces trabajan con la misma base de
+datos SQLite mediante `database/connection.py`.
 
 ## Requerimientos funcionales
 
@@ -63,7 +83,7 @@ CA-09.3 de `tests/test_ordenes_servicio.py`.
 
 | Requerimiento | Categoría | Cumplimiento actual |
 | --- | --- | --- |
-| RNF-01 | Usabilidad | El sistema ofrece un menú de consola con opciones identificables para las operaciones disponibles. |
+| RNF-01 | Usabilidad | El sistema ofrece una GUI con pestañas y una interfaz de consola con opciones identificables para las operaciones disponibles. |
 | RNF-02 | Persistencia | Los datos se almacenan en SQLite y su permanencia está comprobada mediante dos procesos independientes. |
 | RNF-03 | Integridad de datos | Cada conexión activa `PRAGMA foreign_keys = ON`; SQLite rechaza vehículos sin cliente y órdenes sin vehículo. |
 | RNF-04 | Mantenibilidad | La solución separa conexión, clientes, vehículos, órdenes de servicio y pruebas en módulos específicos. |
@@ -120,6 +140,7 @@ autocore/
     test_ordenes_servicio.py
     test_persistencia.py
     test_vehiculos.py
+  gui.py
   main.py
   README.md
 ```
@@ -153,7 +174,15 @@ para que el recorrido cree sus registros desde cero y no dependa de IDs o datos
 anteriores. El archivo `autocore.db` permanece en el repositorio durante este
 cierre y no se elimina como parte de esta política documental.
 
-## Cómo ejecutar el sistema
+## Cómo ejecutar la interfaz gráfica
+
+Desde la carpeta `autocore`:
+
+```powershell
+python gui.py
+```
+
+## Cómo ejecutar la interfaz de consola
 
 Desde la carpeta `autocore`:
 
@@ -181,13 +210,13 @@ OK
 
 AutoCore 1.0 incluye RF-01 a RF-09 en los módulos de Clientes, Vehículos y
 Órdenes de Servicio. Los nueve requerimientos están implementados y cuentan con
-cobertura automatizada. La versión se considera candidata de cierre técnico de
-Semana 13, pendiente de revisión, commit e integración posterior a la rama
-oficial. No se incluye interfaz gráfica.
+cobertura automatizada. La versión final incluye una interfaz gráfica con
+Tkinter y `ttk`, además de conservar la interfaz de consola. AutoCore 1.0 se
+considera candidato de cierre técnico y mantiene la suite completa con 78
+pruebas aprobadas.
 
 ## Limitaciones actuales
 
-- La interfaz es exclusivamente de consola.
 - La fecha se valida como texto obligatorio no vacío; no se valida un formato
   calendario específico porque no forma parte de los criterios definidos.
 - El año es opcional y solo se comprueba que sea entero cuando se proporciona;
@@ -197,7 +226,6 @@ oficial. No se incluye interfaz gráfica.
 
 ## Mejoras futuras
 
-- Incorporar una interfaz gráfica conservando la separación actual por módulos.
 - Ampliar los escenarios de integración y los casos de datos límite.
 - Mejorar los mensajes y la navegación del menú de consola.
 - Preparar documentación de instalación y distribución para otros entornos.
